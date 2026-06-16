@@ -14,6 +14,7 @@ export function Footer() {
           <p className="font-display text-sm font-semibold uppercase tracking-wider text-wood">
             Ubicación
           </p>
+          <p className="mt-2 text-sm text-cream/80">{site.address}</p>
           <p className="mt-2 text-sm text-cream/80">{site.city}</p>
           <p className="text-sm text-cream/80">{site.country}</p>
           <a

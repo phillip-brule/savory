@@ -37,7 +37,7 @@ export function ContactSection() {
 
             <div className="rounded-2xl border border-brown/10 bg-white p-6">
               <h3 className="font-display font-semibold text-brown">Ubicación</h3>
-              <p className="mt-2 text-brown/70">{site.city}, {site.country}</p>
+              <p className="mt-2 text-brown/70">{site.address}, {site.city}, {site.country}</p>
               <a
                 href={site.mapsUrl}
                 target="_blank"
