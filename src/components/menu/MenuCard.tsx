@@ -40,7 +40,6 @@ export function MenuCard({ item, index }: MenuCardProps) {
 
       <div className="flex flex-1 flex-col p-5">
         <h3 className="font-display text-lg font-semibold text-brown">{item.name}</h3>
-        <p className="mt-2 flex-1 text-sm leading-relaxed text-brown/70">{item.description}</p>
 
         {isQuoteOnly ? (
           <a
