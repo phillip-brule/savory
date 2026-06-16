@@ -1,0 +1,43 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-cream: #fdf5e6;
+  --color-cream-dark: #f5ead4;
+  --color-brown: #4b3621;
+  --color-brown-light: #6b4f35;
+  --color-green: #5c6b4f;
+  --color-green-light: #778b78;
+  --color-neon: #f5c518;
+  --color-neon-dark: #d4a810;
+  --color-stone: #2c2419;
+  --color-wood: #c4a574;
+
+  --font-display: 'Fredoka', system-ui, sans-serif;
+  --font-body: 'Nunito', system-ui, sans-serif;
+  --font-script: 'Caveat', cursive;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-cream font-body text-brown antialiased;
+    margin: 0;
+  }
+
+  #root {
+    @apply min-h-svh;
+  }
+}
+
+@layer utilities {
+  .text-shadow-outline {
+    text-shadow:
+      -1px -1px 0 #fdf5e6,
+      1px -1px 0 #fdf5e6,
+      -1px 1px 0 #fdf5e6,
+      1px 1px 0 #fdf5e6;
+  }
+}
