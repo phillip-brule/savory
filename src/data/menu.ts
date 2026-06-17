@@ -49,7 +49,7 @@ export const variedades: Variedad[] = [
   { id: 'pizzita', name: 'Pizzitas', price: 30},
   { id: 'tortica-mermelada', name: 'Torticas con mermelada', price: 30},
   { id: 'mini-wrap', name: 'Mini wraps de jamón y queso', price: 30},
-  { id: 'empenada-dulce', name: 'Empanada dulce de guayaba', price: 25},
+  { id: 'empanada-dulce', name: 'Empanada dulce de guayaba', price: 25},
 ]
 
 export const GRUPAL_MIN_PERSONAS = 2

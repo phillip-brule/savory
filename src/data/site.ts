@@ -1,7 +1,7 @@
 export const site = {
   name: 'Savory Sips & Bites',
   shortName: 'Savory',
-  tagline: 'Picaderas y empenadas para todos',
+  tagline: 'Picaderas y empanadas para todos',
   slogan: 'Ama, come y bebe que la vida es breve',
   address: 'Calle 8 no. 31, Urbanización Henríquez',
   city: 'Santiago de los Caballeros',

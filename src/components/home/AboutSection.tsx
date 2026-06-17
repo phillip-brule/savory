@@ -61,7 +61,7 @@ export function AboutSection() {
               Savory Sips & Bites
             </h2>
             <p className="mt-4 text-brown/70">
-              Somos un espacio en {site.city} dedicado a las mejores picaderas y empenadas.
+              Somos un espacio en {site.city} dedicado a las mejores picaderas y empanadas.
             </p>
             <p className="mt-4 font-script text-2xl text-green">{site.slogan}</p>
           </motion.div>
