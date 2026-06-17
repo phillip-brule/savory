@@ -19,9 +19,8 @@ export function MenuSection() {
             Haz tu pedido con anticipación
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-brown/70">
-            Arma tu pedido aquí y elige la fecha de pick-up — con mínimo 24 horas de
-            antelación. Bocados crujientes y llenos de sabor, listos para el día que
-            necesites.
+            Arma tu pedido aquí y elige la fecha de pick-up con mínimo 24 horas de
+            antelación.
           </p>
         </div>
 

@@ -1,22 +1,30 @@
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { site } from '../../data/site'
 
-const values = [
+const gallery = [
   {
-    title: 'Sabor artesanal',
-    description: 'Cada picadera preparada con dedicación, lista para sorprender a tus invitados.',
+    src: '/images/local.jpg',
+    alt: 'Fachada de Savory Sips & Bites',
   },
   {
-    title: 'Presentación impecable',
-    description: 'Empaques individuales y grupales pensados para que tu evento luzca profesional.',
+    src: '/images/picaderas.jpg',
+    alt: 'Bandeja de picaderas Savory',
   },
   {
-    title: 'Variedad para todos',
-    description: 'Desde empanaditas hasta opciones dulces — hay algo para cada paladar.',
+    src: '/images/gal_1.jpg',
+    alt: 'Cliente disfrutando picaderas de Savory',
+  },
+  {
+    src: '/images/gal_2.jpg',
+    alt: 'Empaque grupal de picaderas para eventos',
   },
 ]
 
 export function AboutSection() {
+  const [selected, setSelected] = useState(0)
+  const active = gallery[selected]
+
   return (
     <section id="nosotros" className="py-20">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
@@ -25,15 +33,22 @@ export function AboutSection() {
             initial={{ opacity: 0, x: -24 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="overflow-hidden rounded-2xl shadow-lg"
+            className="flex flex-col gap-4"
           >
-            <img
-              src="/images/local.jpg"
-              alt="Fachada de Savory Sips & Bites"
-              className="aspect-[4/5] w-full object-cover"
-            />
-          </motion.div>
+            <div className="overflow-hidden rounded-2xl shadow-lg">
+              <motion.img
+                key={active.src}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3 }}
+                src={active.src}
+                alt={active.alt}
+                className="aspect-[4/5] w-full object-cover"
+              />
+            </div>
 
+          </motion.div>
+        
           <motion.div
             initial={{ opacity: 0, x: 24 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -46,30 +61,30 @@ export function AboutSection() {
               Savory Sips & Bites
             </h2>
             <p className="mt-4 text-brown/70">
-              Somos un espacio en {site.city} dedicado a las picaderas y los buenos momentos.
-              Combinamos sabores caseros con una presentación moderna — porque compartir comida es
-              una de las mejores formas de celebrar la vida.
+              Somos un espacio en {site.city} dedicado a las mejores picaderas y empenadas.
             </p>
             <p className="mt-4 font-script text-2xl text-green">{site.slogan}</p>
           </motion.div>
+          
         </div>
-
-        <div className="mt-16 grid gap-6 md:grid-cols-3">
-          {values.map((value, i) => (
-            <motion.div
-              key={value.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="rounded-2xl border border-brown/10 bg-white p-6"
-            >
-              <span className="font-display text-3xl font-bold text-neon/80">0{i + 1}</span>
-              <h3 className="mt-3 font-display text-lg font-semibold text-brown">{value.title}</h3>
-              <p className="mt-2 text-sm text-brown/70">{value.description}</p>
-            </motion.div>
-          ))}
-        </div>
+        <div className="flex w-full gap-2 mt-12">
+              {gallery.map((photo, i) => (
+                <button
+                  key={photo.src}
+                  type="button"
+                  onClick={() => setSelected(i)}
+                  aria-label={photo.alt}
+                  aria-pressed={selected === i}
+                  className={`min-w-0 flex-1 overflow-hidden rounded-lg transition ${
+                    selected === i
+                      ? 'ring-2 ring-neon ring-offset-2 ring-offset-cream'
+                      : 'opacity-70 hover:opacity-100'
+                  }`}
+                >
+                  <img src={photo.src} alt="" className="aspect-[4/3] h-full w-full object-cover" />
+                </button>
+              ))}
+            </div>
       </div>
     </section>
   )
