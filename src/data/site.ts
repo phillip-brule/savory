@@ -5,7 +5,7 @@ export const site = {
   slogan: 'Ama, come y bebe que la vida es breve',
   city: 'Santiago de los Caballeros',
   country: 'República Dominicana',
-  whatsapp: '18492666066',
+  whatsapp: '18092251890',
   whatsappDisplay: '849-266-6066',
   mapsUrl:
     'https://www.google.com/maps/place/Savory+Sips+%26+Bites/@19.4613187,-70.6957289,15.87z/data=!4m6!3m5!1s0x8eb1c5002ee0d1b9:0x8a9afcb2b6c3723c!8m2!3d19.4697144!4d-70.6930965!16s%2Fg%2F11w8wknctv',

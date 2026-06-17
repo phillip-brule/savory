@@ -13,7 +13,7 @@ export const menuCategories: { id: MenuCategory; label: string; description: str
   {
     id: 'picaderas',
     label: 'Picaderas',
-    description: 'Precio por unidad. Variedades de bocados crujientes y sabrosos.',
+    description: 'Precio por unidad. Elige tus productos abajo y añádelos a tu lista de pedido.',
   },
   {
     id: 'empaques',
@@ -93,7 +93,7 @@ export const menuItems: MenuItem[] = [
       'Bandeja o caja grande con variedad de picaderas. Ideal para fiestas, oficinas y celebraciones.',
     price: null,
     category: 'empaques',
-    image: '/images/catering.jpg',
+    image: '/images/empaque_grupal.png',
   },
   {
     id: 'empaque-individual',
@@ -102,6 +102,6 @@ export const menuItems: MenuItem[] = [
       'Caja personal con selección de 3–4 picaderas. Perfecto para regalar o servir por persona.',
     price: null,
     category: 'empaques',
-    image: '/images/menu-flyer.jpg',
+    image: '/images/empaque_individual.png',
   },
 ]
