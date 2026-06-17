@@ -6,17 +6,19 @@ interface CartLineItemProps {
   name: string
   price: number
   quantity: number
+  details?: string
 }
 
-export function CartLineItem({ id, name, price, quantity }: CartLineItemProps) {
+export function CartLineItem({ id, name, price, quantity, details }: CartLineItemProps) {
   const setQuantity = useCartStore((s) => s.setQuantity)
   const removeItem = useCartStore((s) => s.removeItem)
 
   return (
-    <div className="flex items-center justify-between gap-3 border-b border-brown/10 py-4 last:border-0">
+    <div className="flex items-start justify-between gap-3 border-b border-brown/10 py-4 last:border-0">
       <div className="min-w-0 flex-1">
         <p className="font-display font-semibold text-brown">{name}</p>
-        <p className="text-sm text-brown/60">{formatCurrency(price)} c/u</p>
+        {details && <p className="mt-1 text-xs leading-relaxed text-brown/60">{details}</p>}
+        <p className="mt-1 text-sm text-brown/60">{formatCurrency(price)} c/u</p>
       </div>
 
       <div className="flex items-center gap-2">

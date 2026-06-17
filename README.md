@@ -31,4 +31,4 @@ Edita `src/data/menu.ts`. Cada ítem tiene nombre, descripción, precio (o `null
 
 ## Fases futuras
 
-Ver `../PHASES-2-3.md` en la raíz del repositorio para carrito, checkout por WhatsApp, Google Sheets y pagos.
+Ver `FASE-3.md` en la raíz del repositorio para el plan de Google Sheets, pagos con tarjeta en RD y fases futuras.

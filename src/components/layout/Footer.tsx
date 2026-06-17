@@ -1,4 +1,5 @@
 import { site } from '../../data/site'
+import { Logo } from './Logo'
 
 const DEV_CONTACT = {
   whatsapp: "https://wa.me/18092251890",
@@ -11,13 +12,15 @@ export function Footer() {
     <footer className="border-t border-brown/10 bg-stone text-cream">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-3">
         <div>
-          <p className="font-display text-3xl font-bold text-neon">{site.shortName}</p>
-          <p className="mt-2 text-sm text-cream/70">Sips & Bites</p>
-          <p className="mt-4 font-script text-2xl text-neon/90">{site.slogan}</p>
+          <div className="inline-block rounded-2xl bg-cream px-4 py-2">
+            <Logo variant="brown" className="h-10 w-auto" />
+          </div>
+          <p className="mt-3 text-sm text-cream/70">Sips & Bites</p>
+          <p className="mt-4 font-script text-2xl text-honey/90">{site.slogan}</p>
         </div>
 
         <div>
-          <p className="font-display text-sm font-semibold uppercase tracking-wider text-wood">
+          <p className="font-display text-sm font-semibold uppercase tracking-wider text-honey">
             Ubicación
           </p>
           <p className="mt-2 text-sm text-cream/80">{site.address}</p>
@@ -34,7 +37,7 @@ export function Footer() {
         </div>
 
         <div>
-          <p className="font-display text-sm font-semibold uppercase tracking-wider text-wood">
+          <p className="font-display text-sm font-semibold uppercase tracking-wider text-honey">
             Contacto
           </p>
           <a

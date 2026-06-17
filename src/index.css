@@ -1,16 +1,22 @@
 @import 'tailwindcss';
 
 @theme {
-  --color-cream: #fdf5e6;
-  --color-cream-dark: #f5ead4;
-  --color-brown: #4b3621;
-  --color-brown-light: #6b4f35;
-  --color-green: #5c6b4f;
-  --color-green-light: #778b78;
-  --color-neon: #f5c518;
-  --color-neon-dark: #d4a810;
-  --color-stone: #2c2419;
-  --color-wood: #c4a574;
+  /* Savory brand palette */
+  --color-cream: #feefd0;
+  --color-cream-dark: #f5e4b0;
+  --color-brown: #6c4318;
+  --color-brown-light: #8a5520;
+  --color-rust: #b86a3a;
+  --color-honey: #fcd362;
+  --color-honey-dark: #e5bc4a;
+  --color-green: #587a62;
+  --color-green-light: #6d8f77;
+  --color-stone: #4a2f10;
+
+  /* Legacy aliases used across components */
+  --color-neon: #fcd362;
+  --color-neon-dark: #e5bc4a;
+  --color-wood: #b86a3a;
 
   --font-display: 'Fredoka', system-ui, sans-serif;
   --font-body: 'Nunito', system-ui, sans-serif;
@@ -35,9 +41,9 @@
 @layer utilities {
   .text-shadow-outline {
     text-shadow:
-      -1px -1px 0 #fdf5e6,
-      1px -1px 0 #fdf5e6,
-      -1px 1px 0 #fdf5e6,
-      1px 1px 0 #fdf5e6;
+      -1px -1px 0 #feefd0,
+      1px -1px 0 #feefd0,
+      -1px 1px 0 #feefd0,
+      1px 1px 0 #feefd0;
   }
 }

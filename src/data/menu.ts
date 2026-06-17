@@ -1,107 +1,67 @@
-export type MenuCategory = 'picaderas' | 'empaques'
+export type Modalidad = 'individual' | 'grupal'
+export type EmpaqueTipo = 'carton' | 'plastico'
 
-export interface MenuItem {
+export interface CajitaSize {
   id: string
-  name: string
-  description: string
-  price: number | null
-  category: MenuCategory
-  image?: string
+  pieces: number
+  price: number
 }
 
-export const menuCategories: { id: MenuCategory; label: string; description: string }[] = [
+export interface Variedad {
+  id: string
+  name: string
+}
+
+export const modalidadOptions: { id: Modalidad; label: string; description: string }[] = [
   {
-    id: 'picaderas',
-    label: 'Picaderas',
-    description: 'Precio por unidad. Elige tus productos abajo y añádelos a tu lista de pedido.',
+    id: 'individual',
+    label: 'Empaque individual',
+    description: 'Cajita personal con variedades únicas.',
   },
   {
-    id: 'empaques',
-    label: 'Empaques',
-    description: 'Presentaciones individuales o grupales para tus eventos.',
+    id: 'grupal',
+    label: 'Empaque grupal',
+    description: 'Bandeja de 40 piezas para eventos.',
   },
 ]
 
-export const menuItems: MenuItem[] = [
-  {
-    id: 'empanadita-pollo',
-    name: 'Empanadita de pollo',
-    description: 'Empanadita crujiente rellena de pollo, perfecta para picar.',
-    price: 25,
-    category: 'picaderas',
-  },
-  {
-    id: 'quipe',
-    name: 'Quipe de pollo o res',
-    description: 'Clásico quipe dorado con relleno de pollo o res.',
-    price: 25,
-    category: 'picaderas',
-  },
-  {
-    id: 'croqueta-pollo',
-    name: 'Croqueta de pollo',
-    description: 'Croqueta cremosa por dentro y crujiente por fuera.',
-    price: 35,
-    category: 'picaderas',
-  },
-  {
-    id: 'sandwichito',
-    name: 'Sandwichito',
-    description: 'Mini sándwich suave, ideal para reuniones y fiestas.',
-    price: 25,
-    category: 'picaderas',
-  },
-  {
-    id: 'bolita-yuca',
-    name: 'Bolita de yuca',
-    description: 'Bocado de yuca frita, dorado y ligero.',
-    price: 25,
-    category: 'picaderas',
-  },
-  {
-    id: 'bolita-queso',
-    name: 'Bolita de queso',
-    description: 'Bolita de queso frita, irresistible y fundente.',
-    price: 30,
-    category: 'picaderas',
-  },
-  {
-    id: 'mini-wrap',
-    name: 'Mini wrap de jamón y queso',
-    description: 'Wrap enrollado con jamón y queso, porción individual.',
-    price: 30,
-    category: 'picaderas',
-  },
-  {
-    id: 'pizzita',
-    name: 'Pizzita',
-    description: 'Mini pizza con el sabor que todos disfrutan.',
-    price: 30,
-    category: 'picaderas',
-  },
-  {
-    id: 'empanadilla-guayaba',
-    name: 'Empanadilla dulce de guayaba',
-    description: 'Toque dulce con relleno de guayaba artesanal.',
-    price: 25,
-    category: 'picaderas',
-  },
-  {
-    id: 'empaque-grupal',
-    name: 'Empaque grupal',
-    description:
-      'Bandeja o caja grande con variedad de picaderas. Ideal para fiestas, oficinas y celebraciones.',
-    price: null,
-    category: 'empaques',
-    image: '/images/empaque_grupal.png',
-  },
-  {
-    id: 'empaque-individual',
-    name: 'Empaque individual',
-    description:
-      'Caja personal con selección de 3–4 picaderas. Perfecto para regalar o servir por persona.',
-    price: null,
-    category: 'empaques',
-    image: '/images/empaque_individual.png',
-  },
+export const empaqueTipoOptions: { id: EmpaqueTipo; label: string }[] = [
+  { id: 'carton', label: 'Cartón' },
+  { id: 'plastico', label: 'Plástico' },
 ]
+
+export const cajitaSizes: CajitaSize[] = [
+  { id: 'cajita-3', pieces: 3, price: 90 },
+  { id: 'cajita-4', pieces: 4, price: 115 },
+  { id: 'cajita-5', pieces: 5, price: 140 },
+  { id: 'cajita-6', pieces: 6, price: 165 },
+]
+
+export const variedades: Variedad[] = [
+  { id: 'empanadita-pollo', name: 'Empanaditas de pollo' },
+  { id: 'quipe-pollo', name: 'Quipes de pollo' },
+  { id: 'quipe-res', name: 'Quipes de res' },
+  { id: 'bolita-yuca', name: 'Bolitas de yuca y queso' },
+  { id: 'bolita-queso', name: 'Bolitas de queso' },
+  { id: 'croqueta-pollo', name: 'Croquetas de pollo' },
+  { id: 'sandwichito', name: 'Sandwichitos' },
+  { id: 'pizzita', name: 'Pizzitas' },
+  { id: 'tortica-mermelada', name: 'Torticas con mermelada' },
+]
+
+/** Total piezas requeridas para empaque grupal */
+export const GRUPAL_TOTAL_PIEZAS = 40
+
+/** Cada clic en + agrega esta cantidad (grupal) */
+export const GRUPAL_INCREMENTO = 5
+
+/** Precio del empaque grupal de 40 piezas — null = cotizar */
+export const grupalBoxPrice = 1000
+
+export function cajitaLabel(pieces: number): string {
+  return `Cajita de ${pieces} piezas`
+}
+
+export function empaqueTipoLabel(tipo: EmpaqueTipo): string {
+  return tipo === 'carton' ? 'Cartón' : 'Plástico'
+}

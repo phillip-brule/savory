@@ -6,11 +6,13 @@ export interface CartLine {
   name: string
   price: number
   quantity: number
+  details?: string
 }
 
 interface CartState {
   items: CartLine[]
   addItem: (item: Omit<CartLine, 'quantity'>, quantity?: number) => void
+  addCustomItem: (item: Omit<CartLine, 'quantity'>) => void
   removeItem: (id: string) => void
   setQuantity: (id: string, quantity: number) => void
   clearCart: () => void
@@ -25,7 +27,7 @@ export const useCartStore = create<CartState>()(
 
       addItem: (item, quantity = 1) => {
         set((state) => {
-          const existing = state.items.find((i) => i.id === item.id)
+          const existing = state.items.find((i) => i.id === item.id && !item.details)
           if (existing) {
             return {
               items: state.items.map((i) =>
@@ -35,6 +37,12 @@ export const useCartStore = create<CartState>()(
           }
           return { items: [...state.items, { ...item, quantity }] }
         })
+      },
+
+      addCustomItem: (item) => {
+        set((state) => ({
+          items: [...state.items, { ...item, quantity: 1 }],
+        }))
       },
 
       removeItem: (id) => {

@@ -65,25 +65,6 @@ export function CateringSection() {
             />
           </motion.div>
         </div>
-
-        <div className="mt-16 grid gap-8 md:grid-cols-2">
-          {highlights.map((item, i) => (
-            <motion.div
-              key={item.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-              className="overflow-hidden rounded-2xl border border-brown/10 bg-white"
-            >
-              <img src={item.image} alt={item.title} className="aspect-video w-full object-cover" />
-              <div className="p-6">
-                <h3 className="font-display text-xl font-semibold text-brown">{item.title}</h3>
-                <p className="mt-2 text-sm text-brown/70">{item.description}</p>
-              </div>
-            </motion.div>
-          ))}
-        </div>
       </div>
     </section>
   )

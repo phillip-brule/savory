@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { useCartStore } from '../../store/cartStore'
 import { useUiStore } from '../../store/uiStore'
 
+import { Logo } from './Logo'
+
 const navLinks = [
   { href: '#inicio', label: 'Inicio' },
   { href: '#menu', label: 'Menú' },
@@ -34,13 +36,8 @@ export function Header() {
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-brown/10 bg-cream/90 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
-        <a href="#inicio" className="group flex items-center gap-2">
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-stone font-display text-lg font-bold text-neon">
-            S
-          </span>
-          <span className="hidden font-display text-lg font-semibold text-brown sm:block">
-            Savory <span className="text-green">Sips & Bites</span>
-          </span>
+        <a href="#inicio" className="flex items-center">
+          <Logo variant="brown" className="h-9 w-auto sm:h-10" />
         </a>
 
         <nav className="hidden items-center gap-6 md:flex">
@@ -64,7 +61,7 @@ export function Header() {
           >
             <CartIcon className="h-5 w-5" />
             {itemCount() > 0 && (
-              <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-neon px-1 text-[10px] font-bold text-stone">
+              <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-honey px-1 text-[10px] font-bold text-brown">
                 {itemCount()}
               </span>
             )}

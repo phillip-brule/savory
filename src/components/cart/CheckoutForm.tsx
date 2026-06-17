@@ -165,11 +165,16 @@ export function CheckoutForm() {
         <p className="text-xs font-bold uppercase tracking-wider text-wood">Resumen</p>
         <ul className="mt-4 space-y-2">
           {items.map((item, i) => (
-            <li key={item.id} className="flex justify-between gap-4 text-sm text-brown/80">
-              <span>
-                {i + 1}. {item.name} (x{item.quantity})
-              </span>
-              <span className="shrink-0 font-medium">{formatCurrency(item.price * item.quantity)}</span>
+            <li key={item.id} className="text-sm text-brown/80">
+              <div className="flex justify-between gap-4">
+                <span>
+                  {i + 1}. {item.name} (x{item.quantity})
+                </span>
+                <span className="shrink-0 font-medium">{formatCurrency(item.price * item.quantity)}</span>
+              </div>
+              {item.details && (
+                <p className="mt-0.5 pl-4 text-xs text-brown/50">{item.details}</p>
+              )}
             </li>
           ))}
         </ul>

@@ -57,9 +57,10 @@ export function buildOrderMessage(
   const paymentLabel = PAYMENT_METHODS.find((p) => p.value === checkout.paymentMethod)?.label
   const timeLine = checkout.timeSlot || 'Sin preferencia'
 
-  const lines = items.map(
-    (item) => `• ${item.quantity}× ${item.name} — ${formatCurrency(item.price * item.quantity)}`,
-  )
+  const lines = items.map((item) => {
+    const line = `• ${item.quantity}× ${item.name} — ${formatCurrency(item.price * item.quantity)}`
+    return item.details ? `${line}\n  _(${item.details})_` : line
+  })
 
   const parts = [
     `🛒 *Pedido Savory #${orderId}*`,
