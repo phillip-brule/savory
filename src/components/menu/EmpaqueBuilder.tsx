@@ -2,10 +2,15 @@ import { useState, type ReactNode } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
   GRUPAL_INCREMENTO,
-  GRUPAL_TOTAL_PIEZAS,
+  GRUPAL_MAX_PERSONAS,
+  GRUPAL_MAX_PIEZAS,
+  GRUPAL_MIN_PERSONAS,
+  GRUPAL_MIN_PIEZAS,
   cajitaSizes,
   empaqueTipoLabel,
   empaqueTipoOptions,
+  calculateGrupalTotal,
+  calculatePiecesSubtotal,
   grupalBoxPrice,
   modalidadOptions,
   variedades,
@@ -74,29 +79,49 @@ export function EmpaqueBuilder() {
   const [modalidad, setModalidad] = useState<Modalidad | null>(null)
   const [empaqueTipo, setEmpaqueTipo] = useState<EmpaqueTipo | null>(null)
   const [cajita, setCajita] = useState<CajitaSize | null>(null)
+  const [personas, setPersonas] = useState(0)
   const [selections, setSelections] = useState<Selections>({})
   const [showCustomModal, setShowCustomModal] = useState(false)
+  const [isClosing, setIsClosing] = useState(false)
+  const [showAddedToast, setShowAddedToast] = useState(false)
 
   const isIndividual = modalidad === 'individual'
   const isGrupal = modalidad === 'grupal'
 
-  const requiredPieces = isIndividual ? (cajita?.pieces ?? 0) : GRUPAL_TOTAL_PIEZAS
+  const requiredPieces = isIndividual ? (cajita?.pieces ?? 0) : GRUPAL_MIN_PIEZAS
   const picked = totalSelected(selections)
 
   const showStep2 = isIndividual
   const showStep3 = isIndividual && empaqueTipo !== null
+  const showStep2Grupal = isGrupal
   const showStep4Individual = isIndividual && cajita !== null
-  const showStep4Grupal = isGrupal
-  const showStep4 = showStep4Individual || showStep4Grupal
+  const showStep3Grupal = isGrupal && personas >= GRUPAL_MIN_PERSONAS
+  const showStep4 = showStep4Individual || showStep3Grupal
+
+  const grupalStepVariedades = isGrupal ? 3 : 4
 
   const isComplete = isIndividual
     ? cajita !== null && picked === requiredPieces
-    : picked === GRUPAL_TOTAL_PIEZAS
+    : personas >= GRUPAL_MIN_PERSONAS &&
+      personas <= GRUPAL_MAX_PERSONAS &&
+      picked >= GRUPAL_MIN_PIEZAS &&
+      picked <= GRUPAL_MAX_PIEZAS
+
+  const grupalPiecesSubtotal = isGrupal ? calculatePiecesSubtotal(selections) : 0
+  const grupalTotal = isGrupal ? calculateGrupalTotal(selections) : 0
 
   function resetFromModalidad() {
     setEmpaqueTipo(null)
     setCajita(null)
+    setPersonas(0)
     setSelections({})
+  }
+
+  function resetBuilder() {
+    setModalidad(null)
+    resetFromModalidad()
+    setIsClosing(false)
+    setShowAddedToast(false)
   }
 
   function selectModalidad(m: Modalidad) {
@@ -112,6 +137,28 @@ export function EmpaqueBuilder() {
 
   function selectCajita(box: CajitaSize) {
     setCajita(box)
+    setSelections({})
+  }
+
+  function handlePersonasChange(raw: string) {
+    if (raw === '') {
+      setPersonas(0)
+      setSelections({})
+      return
+    }
+
+    const next = Number.parseInt(raw, 10)
+    if (Number.isNaN(next)) return
+
+    setPersonas(Math.min(GRUPAL_MAX_PERSONAS, Math.max(0, next)))
+    setSelections({})
+  }
+
+  function adjustPersonas(delta: number) {
+    setPersonas((prev) => {
+      const next = Math.min(GRUPAL_MAX_PERSONAS, Math.max(0, prev + delta))
+      return next
+    })
     setSelections({})
   }
 
@@ -137,7 +184,7 @@ export function EmpaqueBuilder() {
   }
 
   function addGrupalVariedad(id: string) {
-    if (picked + GRUPAL_INCREMENTO > GRUPAL_TOTAL_PIEZAS) return
+    if (picked + GRUPAL_INCREMENTO > GRUPAL_MAX_PIEZAS) return
     setSelections((prev) => ({
       ...prev,
       [id]: (prev[id] ?? 0) + GRUPAL_INCREMENTO,
@@ -157,35 +204,56 @@ export function EmpaqueBuilder() {
   }
 
   function handleAdd() {
-    if (!isComplete || !modalidad) return
+    if (!isComplete || !modalidad || isClosing) return
 
-    const details = buildDetails(selections)
+    const varietyDetails = buildDetails(selections)
 
     if (isIndividual && cajita && empaqueTipo) {
       addCustomItem({
         id: `individual-${Date.now()}`,
         name: `Empaque individual — ${cajitaLabel(cajita.pieces)} (${empaqueTipoLabel(empaqueTipo)})`,
         price: cajita.price,
-        details,
+        details: varietyDetails,
       })
-    } else if (isGrupal) {
+    } else if (isGrupal && personas >= GRUPAL_MIN_PERSONAS) {
+      const piecesSubtotal = calculatePiecesSubtotal(selections)
+      const totalPrice = grupalBoxPrice + piecesSubtotal
       addCustomItem({
         id: `grupal-${Date.now()}`,
-        name: `Empaque grupal — ${GRUPAL_TOTAL_PIEZAS} piezas`,
-        price: grupalBoxPrice ?? 0,
-        details: grupalBoxPrice === null ? `${details} (precio a cotizar)` : details,
+        name: `Empaque grupal — ${picked} piezas (${personas} personas)`,
+        price: totalPrice,
+        details: `Personas: ${personas} | ${varietyDetails} | Empaque: ${formatCurrency(grupalBoxPrice)} + picaderas: ${formatCurrency(piecesSubtotal)}`,
       })
     }
 
-    setModalidad(null)
-    resetFromModalidad()
+    setShowAddedToast(true)
+    setIsClosing(true)
+
+    window.setTimeout(() => {
+      resetBuilder()
+    }, 650)
   }
 
   const customWhatsAppMessage = `¡Hola! Me gustaría cotizar un pedido personalizado con variedades repetidas en mi empaque individual.`
 
   return (
-    <div className="space-y-10">
-      {/* Paso 1 */}
+    <div className="relative space-y-10">
+      <AnimatePresence>
+        {showAddedToast && (
+          <motion.div
+            initial={{ opacity: 0, y: 16, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.98 }}
+            transition={{ duration: 0.25 }}
+            className="pointer-events-none absolute inset-x-0 top-0 z-10 flex justify-center"
+          >
+            <div className="rounded-full bg-green px-5 py-2.5 font-display text-sm font-semibold text-cream shadow-lg">
+              ¡Añadido al carrito!
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div>
         <StepHeading n={1} title="Modalidad de empaque" />
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -204,7 +272,16 @@ export function EmpaqueBuilder() {
         </div>
       </div>
 
-      {/* Paso 2 — solo individual */}
+      <AnimatePresence mode="popLayout">
+        {modalidad && (
+          <motion.div
+            key={modalidad}
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: isClosing ? 0 : 1, height: isClosing ? 0 : 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.45, ease: 'easeInOut' }}
+            className="space-y-10 overflow-hidden"
+          >
       {showStep2 && (
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
           <StepHeading n={2} title="Tipo de empaque" />
@@ -227,7 +304,6 @@ export function EmpaqueBuilder() {
         </motion.div>
       )}
 
-      {/* Paso 3 — solo individual */}
       {showStep3 && (
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
           <StepHeading n={3} title="Cantidad de piezas" />
@@ -248,7 +324,50 @@ export function EmpaqueBuilder() {
         </motion.div>
       )}
 
-      {/* Paso 4 */}
+      {showStep2Grupal && (
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
+          <StepHeading n={2} title="Cantidad de personas" />
+          <p className="mt-2 text-sm leading-relaxed text-brown/70">
+            La caja grupal incluye servilletas y cubiertos para que tu grupo tenga una experiencia completa.
+          </p>
+          <div className="mt-4 max-w-xs rounded-2xl border border-brown/10 bg-white p-4">
+            <span className="text-xs font-bold uppercase tracking-wider text-rust">Personas *</span>
+            <div className="mt-3 flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => adjustPersonas(-1)}
+                disabled={personas <= 0}
+                aria-label="Restar personas"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-brown/20 text-brown disabled:opacity-30"
+              >
+                −
+              </button>
+              <input
+                type="number"
+                min={0}
+                max={GRUPAL_MAX_PERSONAS}
+                value={personas}
+                onChange={(e) => handlePersonasChange(e.target.value)}
+                className="w-full rounded-xl border-2 border-brown/15 bg-cream px-4 py-3 text-center font-display text-2xl font-bold text-brown focus:border-brown focus:outline-none"
+                aria-label="Cantidad de personas"
+              />
+              <button
+                type="button"
+                onClick={() => adjustPersonas(1)}
+                disabled={personas >= GRUPAL_MAX_PERSONAS}
+                aria-label="Sumar personas"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-brown/20 text-brown disabled:opacity-30"
+              >
+                +
+              </button>
+            </div>
+            <p className="mt-3 text-xs text-brown/50">
+              Escribe o usa +/−. Mínimo {GRUPAL_MIN_PERSONAS} personas para continuar.
+            </p>
+          </div>
+        </motion.div>
+      )}
+
       {showStep4 && (
         <motion.div
           initial={{ opacity: 0, y: 12 }}
@@ -257,15 +376,19 @@ export function EmpaqueBuilder() {
         >
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <StepHeading n={isIndividual ? 4 : 2 } title="Elige tus variedades" />
+              <StepHeading
+                n={isIndividual ? 4 : grupalStepVariedades}
+                title="Elige tus variedades"
+              />
               <p className="mt-1 text-sm text-brown/60">
                 {isIndividual
                   ? `Cada pieza debe ser una variedad distinta. Selecciona ${requiredPieces} variedades.`
-                  : `Cada clic suma ${GRUPAL_INCREMENTO} piezas. Arma un total de ${GRUPAL_TOTAL_PIEZAS} piezas.`}
+                  : `Cada clic suma ${GRUPAL_INCREMENTO} piezas. Mínimo ${GRUPAL_MIN_PIEZAS} y máximo ${GRUPAL_MAX_PIEZAS} piezas.`}
               </p>
             </div>
             <p className={`font-display text-sm font-bold ${isComplete ? 'text-green' : 'text-rust'}`}>
-              {picked} / {requiredPieces} piezas
+              {picked}
+              {isIndividual ? ` / ${requiredPieces} piezas` : ` piezas`}
             </p>
           </div>
 
@@ -306,13 +429,16 @@ export function EmpaqueBuilder() {
                 )
               }
 
-              const canAdd = picked + GRUPAL_INCREMENTO <= GRUPAL_TOTAL_PIEZAS
+              const canAdd = picked + GRUPAL_INCREMENTO <= GRUPAL_MAX_PIEZAS
               return (
                 <li
                   key={v.id}
                   className="flex items-center justify-between gap-3 rounded-xl border border-brown/10 bg-cream/50 px-4 py-3"
                 >
-                  <span className="text-sm font-medium text-brown">{v.name}</span>
+                  <div>
+                    <span className="text-sm font-medium text-brown">{v.name}</span>
+                    <p className="mt-0.5 text-xs text-brown/55">{formatCurrency(v.price)} c/u</p>
+                  </div>
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
@@ -339,24 +465,38 @@ export function EmpaqueBuilder() {
             })}
           </ul>
 
-          {isGrupal && grupalBoxPrice === null && (
-            <p className="mt-4 text-sm text-brown/60">
-              El precio del empaque grupal se confirmará al coordinar tu pedido.
-            </p>
+          {isGrupal && (
+            <div className="mt-4 rounded-xl bg-cream-dark/60 px-4 py-3 text-sm text-brown/80">
+              <div className="flex justify-between">
+                <span>Empaque base (incl. servilletas y cubiertos)</span>
+                <span>{formatCurrency(grupalBoxPrice)}</span>
+              </div>
+              <div className="mt-1 flex justify-between">
+                <span>Picaderas ({picked} piezas)</span>
+                <span>{formatCurrency(grupalPiecesSubtotal)}</span>
+              </div>
+              <div className="mt-2 flex justify-between border-t border-brown/10 pt-2 font-display font-bold text-brown">
+                <span>Total estimado</span>
+                <span className="text-rust">{formatCurrency(grupalTotal)}</span>
+              </div>
+            </div>
           )}
 
           <button
             type="button"
             onClick={handleAdd}
-            disabled={!isComplete}
+            disabled={!isComplete || isClosing}
             className="mt-6 w-full rounded-full bg-brown py-3 font-display font-semibold text-cream transition hover:bg-brown-light disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto sm:px-10"
           >
-            Añadir al carrito
+            {isClosing ? 'Añadiendo…' : 'Añadir al carrito'}
           </button>
         </motion.div>
       )}
 
-      {/* Modal pedido personalizado */}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <AnimatePresence>
         {showCustomModal && (
           <>

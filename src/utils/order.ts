@@ -9,6 +9,13 @@ export const PAYMENT_METHODS = [
 
 export type PaymentMethod = (typeof PAYMENT_METHODS)[number]['value']
 
+export const DELIVERY_TYPES = [
+  { value: 'pickup', label: 'Pick-up' },
+  { value: 'delivery', label: 'Delivery' },
+] as const
+
+export type DeliveryType = (typeof DELIVERY_TYPES)[number]['value']
+
 export const TIME_SLOTS = [
   { value: '', label: 'Sin preferencia' },
   { value: '9:00 AM – 11:00 AM', label: '9:00 AM – 11:00 AM' },
@@ -18,9 +25,16 @@ export const TIME_SLOTS = [
   { value: '5:00 PM – 6:00 PM', label: '5:00 PM – 6:00 PM' },
 ] as const
 
+export const DEPOSIT_NOTICE =
+  'Trabajamos con el 50% por adelantado para agendar el pedido y el restante se puede pagar el día de la entrega. Vía depósito o transferencia.'
+
+export const DELIVERY_NOTICE =
+  'Hacemos las entregas vía Uber Flash o PedidosYa Mandao. El cliente paga el servicio de envío al recibir el pedido.'
+
 export interface CheckoutData {
   name: string
   phone: string
+  deliveryType: DeliveryType
   date: string
   timeSlot: string
   paymentMethod: PaymentMethod
@@ -55,6 +69,7 @@ export function buildOrderMessage(
   total: number,
 ): string {
   const paymentLabel = PAYMENT_METHODS.find((p) => p.value === checkout.paymentMethod)?.label
+  const deliveryLabel = DELIVERY_TYPES.find((d) => d.value === checkout.deliveryType)?.label
   const timeLine = checkout.timeSlot || 'Sin preferencia'
 
   const lines = items.map((item) => {
@@ -63,11 +78,11 @@ export function buildOrderMessage(
   })
 
   const parts = [
-    `🛒 *Pedido Savory #${orderId}*`,
+    `*Pedido Savory #${orderId}*`,
     '',
     `*Cliente:* ${checkout.name}`,
     `*Tel:* ${checkout.phone}`,
-    `*Pick-up:* ${formatDateEs(checkout.date)}, ${timeLine}`,
+    `*Entrega:* ${deliveryLabel} — ${formatDateEs(checkout.date)}, ${timeLine}`,
     `*Pago:* ${paymentLabel}`,
     '',
     '*Pedido:*',

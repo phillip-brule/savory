@@ -4,12 +4,16 @@ import { useUiStore } from '../../store/uiStore'
 import { site, whatsAppUrl } from '../../data/site'
 import { formatCurrency } from '../../utils/formatCurrency'
 import {
+  DELIVERY_NOTICE,
+  DELIVERY_TYPES,
+  DEPOSIT_NOTICE,
   PAYMENT_METHODS,
   TIME_SLOTS,
   buildOrderMessage,
   generateOrderId,
   minPickupDate,
   type CheckoutData,
+  type DeliveryType,
   type PaymentMethod,
 } from '../../utils/order'
 
@@ -23,14 +27,16 @@ export function CheckoutForm() {
   const [form, setForm] = useState<CheckoutData>({
     name: '',
     phone: '',
+    deliveryType: 'pickup',
     date: '',
     timeSlot: '',
-    paymentMethod: 'efectivo',
+    paymentMethod: 'transferencia',
     notes: '',
   })
   const [errors, setErrors] = useState<Partial<Record<keyof CheckoutData, string>>>({})
 
   const total = subtotal()
+  const isDelivery = form.deliveryType === 'delivery'
 
   function validate(): boolean {
     const next: Partial<Record<keyof CheckoutData, string>> = {}
@@ -66,8 +72,8 @@ export function CheckoutForm() {
       <div className="rounded-xl border border-wood/30 bg-cream-dark/60 p-4">
         <p className="font-display text-xs font-bold uppercase tracking-wider text-wood">Importante</p>
         <p className="mt-2 text-sm leading-relaxed text-brown/80">
-          Los pedidos son solo para pick up y se preparan con mínimo 24 horas de antelación.
-          Coordinamos la hora de entrega contigo por WhatsApp.
+          Los pedidos se preparan con mínimo 24 horas de antelación. Coordinamos los detalles
+          contigo por WhatsApp.
         </p>
       </div>
 
@@ -103,7 +109,36 @@ export function CheckoutForm() {
 
       <fieldset className="space-y-5">
         <legend className="text-xs font-bold uppercase tracking-wider text-wood">
-          Fecha de pick up
+          Tipo de entrega
+        </legend>
+
+        <div className="flex flex-wrap gap-3">
+          {DELIVERY_TYPES.map((opt) => (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => update('deliveryType', opt.value as DeliveryType)}
+              className={`rounded-full px-6 py-2.5 font-display text-sm font-semibold transition ${
+                form.deliveryType === opt.value
+                  ? 'bg-brown text-cream shadow-md'
+                  : 'border-2 border-brown/15 bg-white text-brown hover:border-rust'
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+
+        {isDelivery && (
+          <p className="rounded-xl border border-green/20 bg-green/5 p-3 text-sm leading-relaxed text-brown/80">
+            {DELIVERY_NOTICE}
+          </p>
+        )}
+      </fieldset>
+
+      <fieldset className="space-y-5">
+        <legend className="text-xs font-bold uppercase tracking-wider text-wood">
+          {isDelivery ? 'Fecha de entrega' : 'Fecha de pick-up'}
         </legend>
 
         <label className="block">
@@ -155,7 +190,11 @@ export function CheckoutForm() {
         <textarea
           value={form.notes}
           onChange={(e) => update('notes', e.target.value)}
-          placeholder="Ej: es para un cumpleaños, escribir mensaje en la caja."
+          placeholder={
+            isDelivery
+              ? 'Ej: dirección de entrega, referencias, mensaje en la caja.'
+              : 'Ej: es para un cumpleaños, escribir mensaje en la caja.'
+          }
           rows={3}
           className="mt-1 w-full resize-none border-b border-brown/20 bg-transparent py-2 text-brown placeholder:text-brown/30 focus:border-green focus:outline-none"
         />
@@ -186,6 +225,14 @@ export function CheckoutForm() {
           <span className="font-display text-lg font-bold text-brown">Total</span>
           <span className="font-display text-2xl font-bold text-brown">{formatCurrency(total)}</span>
         </div>
+        <p className="mt-4 border-t border-brown/10 pt-4 text-sm leading-relaxed text-brown/70">
+          Adelanto (50%): <span className="font-semibold text-brown">{formatCurrency(total * 0.5)}</span>
+        </p>
+      </div>
+
+      <div className="rounded-xl border border-honey/40 bg-honey/10 p-4">
+        <p className="font-display text-xs font-bold uppercase tracking-wider text-rust">Pago y agendamiento</p>
+        <p className="mt-2 text-sm leading-relaxed text-brown/80">{DEPOSIT_NOTICE}</p>
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row">

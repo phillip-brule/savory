@@ -81,9 +81,7 @@ export function CartPanel() {
 
                   {items.length > 0 && (
                     <div className="mt-6 rounded-xl border border-brown/10 bg-cream-dark/50 p-4 text-sm text-brown/70">
-                      <p>
-                        Pedidos solo para pick up · Mínimo 24h de antelación.
-                      </p>
+                      <p>Mínimo 24h de antelación. Pick-up o delivery disponible en checkout.</p>
                     </div>
                   )}
                 </>
