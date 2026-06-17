@@ -1,6 +1,8 @@
 # Savory Sips & Bites — Fases 2 y 3
 
-Referencia para implementación futura. La Fase 1 es solo exhibición del menú.
+Referencia para implementación futura.
+
+> **Fase 2 implementada** — carrito, checkout con aviso de pick-up 24h, y envío por WhatsApp.
 
 ---
 

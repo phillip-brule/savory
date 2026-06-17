@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import type { MenuItem } from '../../data/menu'
+import { useCartStore } from '../../store/cartStore'
 import { formatCurrency } from '../../utils/formatCurrency'
 import { site, whatsAppUrl } from '../../data/site'
 
@@ -9,7 +10,13 @@ interface MenuCardProps {
 }
 
 export function MenuCard({ item, index }: MenuCardProps) {
+  const addItem = useCartStore((s) => s.addItem)
   const isQuoteOnly = item.price === null
+
+  function handleAdd() {
+    if (item.price === null) return
+    addItem({ id: item.id, name: item.name, price: item.price })
+  }
 
   return (
     <motion.article
@@ -40,6 +47,7 @@ export function MenuCard({ item, index }: MenuCardProps) {
 
       <div className="flex flex-1 flex-col p-5">
         <h3 className="font-display text-lg font-semibold text-brown">{item.name}</h3>
+        <p className="mt-2 flex-1 text-sm leading-relaxed text-brown/70">{item.description}</p>
 
         {isQuoteOnly ? (
           <a
@@ -51,9 +59,13 @@ export function MenuCard({ item, index }: MenuCardProps) {
             Solicitar cotización
           </a>
         ) : (
-          <p className="mt-4 text-xs font-medium uppercase tracking-wide text-brown/40">
-            Pedidos en línea — próximamente
-          </p>
+          <button
+            type="button"
+            onClick={handleAdd}
+            className="mt-4 inline-flex items-center justify-center rounded-full bg-brown px-4 py-2.5 text-sm font-bold text-cream transition hover:bg-brown-light"
+          >
+            Añadir al carrito
+          </button>
         )}
       </div>
     </motion.article>

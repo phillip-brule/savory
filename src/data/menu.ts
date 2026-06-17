@@ -13,7 +13,7 @@ export const menuCategories: { id: MenuCategory; label: string; description: str
   {
     id: 'picaderas',
     label: 'Picaderas',
-    description: 'Precio por unidad. Variedades de bocados crujientes y sabrosos.',
+    description: 'Precio por unidad. Elige tus productos abajo y añádelos a tu lista de pedido.',
   },
   {
     id: 'empaques',

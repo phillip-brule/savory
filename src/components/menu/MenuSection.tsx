@@ -16,10 +16,12 @@ export function MenuSection() {
             Nuestro menú
           </p>
           <h2 className="mt-2 font-display text-4xl font-bold text-brown sm:text-5xl">
-            Variedades de picaderas
+            Haz tu pedido con anticipación
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-brown/70">
-            Bocados crujientes y llenos de sabor, preparados para compartir en cualquier ocasión.
+            Arma tu pedido aquí y elige la fecha de pick-up — con mínimo 24 horas de
+            antelación. Bocados crujientes y llenos de sabor, listos para el día que
+            necesites.
           </p>
         </div>
 

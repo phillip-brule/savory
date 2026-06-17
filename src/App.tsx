@@ -1,6 +1,8 @@
 import { Header } from './components/layout/Header'
 import { Footer } from './components/layout/Footer'
 import { WhatsAppFab } from './components/layout/WhatsAppFab'
+import { CartBar } from './components/cart/CartBar'
+import { CartPanel } from './components/cart/CartPanel'
 import { Hero } from './components/home/Hero'
 import { NeonQuote } from './components/home/NeonQuote'
 import { AboutSection } from './components/home/AboutSection'
@@ -21,6 +23,8 @@ function App() {
         <ContactSection />
       </main>
       <Footer />
+      <CartBar />
+      <CartPanel />
       <WhatsAppFab />
     </>
   )
