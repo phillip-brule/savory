@@ -1,21 +1,6 @@
 import { motion } from 'framer-motion'
 import { site, whatsAppUrl } from '../../data/site'
 
-const highlights = [
-  {
-    title: 'Empaque grupal',
-    description:
-      'Bandejas y cajas grandes con docenas de picaderas surtidas. Perfecto para bodas, cumpleaños y eventos corporativos.',
-    image: '/images/empaque_grupal.png',
-  },
-  {
-    title: 'Empaque individual',
-    description:
-      'Cajas personales con una selección de bocados. Elegante, práctico y listo para servir a cada invitado.',
-    image: '/images/empaque_individual.png',
-  },
-]
-
 export function CateringSection() {
   return (
     <section id="eventos" className="bg-cream-dark py-20">
