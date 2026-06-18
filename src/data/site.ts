@@ -3,7 +3,7 @@ export const site = {
   shortName: 'Savory',
   tagline: 'Picaderas y empanadas para todos',
   slogan: 'Ama, come y bebe que la vida es breve',
-  address: 'Calle 8 no. 31, Urbanización Henríquez',
+  address: 'Calle 8 no. 31, Urbanización Henríquez (frente a Residencial Luma I)',
   city: 'Santiago de los Caballeros',
   country: 'República Dominicana',
   whatsapp: '18092251890',

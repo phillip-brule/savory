@@ -31,6 +31,8 @@ export const DEPOSIT_NOTICE =
 export const DELIVERY_NOTICE =
   'Hacemos las entregas vía Uber Flash o PedidosYa Mandao. El cliente paga el servicio de envío al recibir el pedido.'
 
+export const ITBIS_RATE = 0.18
+
 export interface CheckoutData {
   name: string
   phone: string
@@ -38,7 +40,22 @@ export interface CheckoutData {
   date: string
   timeSlot: string
   paymentMethod: PaymentMethod
+  needsInvoice: boolean
+  rnc: string
   notes: string
+}
+
+export interface OrderTotals {
+  subtotal: number
+  itbis: number
+  total: number
+  deposit: number
+}
+
+export function calculateOrderTotals(subtotal: number, needsInvoice: boolean): OrderTotals {
+  const itbis = needsInvoice ? subtotal * ITBIS_RATE : 0
+  const total = subtotal + itbis
+  return { subtotal, itbis, total, deposit: total * 0.5 }
 }
 
 export function generateOrderId(): string {
@@ -66,11 +83,12 @@ export function buildOrderMessage(
   orderId: string,
   items: CartLine[],
   checkout: CheckoutData,
-  total: number,
+  subtotal: number,
 ): string {
   const paymentLabel = PAYMENT_METHODS.find((p) => p.value === checkout.paymentMethod)?.label
   const deliveryLabel = DELIVERY_TYPES.find((d) => d.value === checkout.deliveryType)?.label
   const timeLine = checkout.timeSlot || 'Sin preferencia'
+  const { itbis, total } = calculateOrderTotals(subtotal, checkout.needsInvoice)
 
   const lines = items.map((item) => {
     const line = `• ${item.quantity}× ${item.name} — ${formatCurrency(item.price * item.quantity)}`
@@ -84,12 +102,26 @@ export function buildOrderMessage(
     `*Tel:* ${checkout.phone}`,
     `*Entrega:* ${deliveryLabel} — ${formatDateEs(checkout.date)}, ${timeLine}`,
     `*Pago:* ${paymentLabel}`,
+    `*Factura fiscal:* ${checkout.needsInvoice ? 'Sí' : 'No'}`,
+  ]
+
+  if (checkout.needsInvoice) {
+    parts.push(`*RNC:* ${checkout.rnc.trim()}`)
+  }
+
+  parts.push(
     '',
     '*Pedido:*',
     ...lines,
     '',
-    `*Total:* ${formatCurrency(total)}`,
-  ]
+    `*Subtotal:* ${formatCurrency(subtotal)}`,
+  )
+
+  if (checkout.needsInvoice) {
+    parts.push(`*ITBIS (18%):* ${formatCurrency(itbis)}`)
+  }
+
+  parts.push(`*Total:* ${formatCurrency(total)}`)
 
   if (checkout.notes.trim()) {
     parts.push('', `*Notas:* ${checkout.notes.trim()}`)

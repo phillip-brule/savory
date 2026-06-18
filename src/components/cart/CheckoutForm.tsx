@@ -10,6 +10,7 @@ import {
   PAYMENT_METHODS,
   TIME_SLOTS,
   buildOrderMessage,
+  calculateOrderTotals,
   generateOrderId,
   minPickupDate,
   type CheckoutData,
@@ -31,11 +32,14 @@ export function CheckoutForm() {
     date: '',
     timeSlot: '',
     paymentMethod: 'transferencia',
+    needsInvoice: false,
+    rnc: '',
     notes: '',
   })
   const [errors, setErrors] = useState<Partial<Record<keyof CheckoutData, string>>>({})
 
-  const total = subtotal()
+  const subtotalAmount = subtotal()
+  const { itbis, total, deposit } = calculateOrderTotals(subtotalAmount, form.needsInvoice)
   const isDelivery = form.deliveryType === 'delivery'
 
   function validate(): boolean {
@@ -47,6 +51,12 @@ export function CheckoutForm() {
     } else if (form.date < minPickupDate()) {
       next.date = 'Mínimo 24 horas de antelación'
     }
+    if (form.needsInvoice && !form.rnc.trim()) {
+      next.rnc = 'Requerido para factura fiscal'
+    } else if (form.needsInvoice && !form.rnc.trim().match(/^[0-9]{9,11}$/)) {
+      next.rnc = 'RNC debe tener 9 dígitos'
+    }
+
     setErrors(next)
     return Object.keys(next).length === 0
   }
@@ -56,7 +66,7 @@ export function CheckoutForm() {
     if (!validate()) return
 
     const orderId = generateOrderId()
-    const message = buildOrderMessage(orderId, items, form, total)
+    const message = buildOrderMessage(orderId, items, form, subtotalAmount)
     clearCart()
     openSuccess(orderId)
     window.open(whatsAppUrl(message), '_blank', 'noopener,noreferrer')
@@ -134,6 +144,24 @@ export function CheckoutForm() {
             {DELIVERY_NOTICE}
           </p>
         )}
+
+        {!isDelivery && (
+          <div className="rounded-xl border border-brown/15 bg-cream-dark/60 p-4">
+            <p className="text-xs font-bold uppercase tracking-wider text-wood">Dirección de pick-up</p>
+            <p className="mt-2 text-sm leading-relaxed text-brown/80">{site.address}</p>
+            <p className="mt-1 text-sm text-brown/60">
+              {site.city}, {site.country}
+            </p>
+            <a
+              href={site.mapsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-green hover:underline"
+            >
+              Ver ubicación en Maps →
+            </a>
+          </div>
+        )}
       </fieldset>
 
       <fieldset className="space-y-5">
@@ -185,6 +213,63 @@ export function CheckoutForm() {
         </select>
       </label>
 
+      <fieldset className="space-y-5">
+        <legend className="text-xs font-bold uppercase tracking-wider text-wood">
+          Factura con comprobante fiscal
+        </legend>
+
+        <div className="flex flex-wrap gap-3">
+          <button
+            type="button"
+            onClick={() => {
+              setForm((prev) => ({ ...prev, needsInvoice: false, rnc: '' }))
+              setErrors((prev) => ({ ...prev, rnc: undefined }))
+            }}
+            className={`rounded-full px-6 py-2.5 font-display text-sm font-semibold transition ${
+              !form.needsInvoice
+                ? 'bg-brown text-cream shadow-md'
+                : 'border-2 border-brown/15 bg-white text-brown hover:border-rust'
+            }`}
+          >
+            No
+          </button>
+          <button
+            type="button"
+            onClick={() => update('needsInvoice', true)}
+            className={`rounded-full px-6 py-2.5 font-display text-sm font-semibold transition ${
+              form.needsInvoice
+                ? 'bg-brown text-cream shadow-md'
+                : 'border-2 border-brown/15 bg-white text-brown hover:border-rust'
+            }`}
+          >
+            Sí
+          </button>
+        </div>
+
+        {form.needsInvoice && (
+          <>
+            <p className="text-sm leading-relaxed text-brown/70">
+              Se aplica ITBIS (18%) al subtotal del pedido.
+            </p>
+            <label className="block">
+              <span className="text-xs font-bold uppercase tracking-wider text-wood">RNC *</span>
+              <input
+                type="text"
+                inputMode="numeric"
+                value={form.rnc}
+                onChange={(e) => update('rnc', e.target.value)}
+                placeholder="Ej: 123456789"
+                className="mt-1 w-full border-b border-brown/20 bg-transparent py-2 text-brown placeholder:text-brown/30 focus:border-green focus:outline-none"
+              />
+              <p className="mt-1 text-xs text-brown/50">
+                Registro Nacional del Contribuyente de la empresa o persona jurídica.
+              </p>
+              {errors.rnc && <span className="text-xs text-red-600">{errors.rnc}</span>}
+            </label>
+          </>
+        )}
+      </fieldset>
+
       <label className="block">
         <span className="text-xs font-bold uppercase tracking-wider text-wood">Notas para el pedido</span>
         <textarea
@@ -219,14 +304,20 @@ export function CheckoutForm() {
         </ul>
         <div className="mt-4 flex justify-between border-t border-brown/10 pt-4 text-sm">
           <span className="text-brown/70">Subtotal productos</span>
-          <span className="font-semibold">{formatCurrency(total)}</span>
+          <span className="font-semibold">{formatCurrency(subtotalAmount)}</span>
         </div>
+        {form.needsInvoice && (
+          <div className="mt-2 flex justify-between text-sm">
+            <span className="text-brown/70">ITBIS (18%)</span>
+            <span className="font-semibold">{formatCurrency(itbis)}</span>
+          </div>
+        )}
         <div className="mt-2 flex items-baseline justify-between">
           <span className="font-display text-lg font-bold text-brown">Total</span>
           <span className="font-display text-2xl font-bold text-brown">{formatCurrency(total)}</span>
         </div>
         <p className="mt-4 border-t border-brown/10 pt-4 text-sm leading-relaxed text-brown/70">
-          Adelanto (50%): <span className="font-semibold text-brown">{formatCurrency(total * 0.5)}</span>
+          Adelanto (50%): <span className="font-semibold text-brown">{formatCurrency(deposit)}</span>
         </p>
       </div>
 

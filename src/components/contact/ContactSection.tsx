@@ -37,14 +37,20 @@ export function ContactSection() {
 
             <div className="rounded-2xl border border-brown/10 bg-white p-6">
               <h3 className="font-display font-semibold text-brown">Ubicación</h3>
-              <p className="mt-2 text-brown/70">{site.address}, {site.city}, {site.country}</p>
+              <p className="mt-2 leading-relaxed text-brown/70">{site.address}</p>
+              <p className="mt-1 text-sm text-brown/60">
+                {site.city}, {site.country}
+              </p>
               <a
                 href={site.mapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-3 inline-block font-semibold text-green hover:underline"
+                className="mt-4 inline-flex items-center justify-center gap-2 rounded-full bg-brown px-6 py-2.5 font-display text-sm font-semibold text-cream transition hover:bg-brown-light"
               >
-                Abrir en Google Maps →
+                <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current" aria-hidden="true">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z" />
+                </svg>
+                Ver ubicación
               </a>
             </div>
 
